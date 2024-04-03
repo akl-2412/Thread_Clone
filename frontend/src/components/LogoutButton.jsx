@@ -2,7 +2,6 @@ import { Button } from "@chakra-ui/button";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
-
 const LogoutButton = () => {
 	const setUser = useSetRecoilState(userAtom);
 	const showToast = useShowToast();
