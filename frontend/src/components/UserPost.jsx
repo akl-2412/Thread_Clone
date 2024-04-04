@@ -68,7 +68,7 @@ const UserPost = ({ postImg, postTitle, likes, replies }) => {
 					)}
 
 					<Flex gap={3} my={1}>
-						{/*<Actions liked={liked} setLiked={setLiked} />*/}
+						<Actions liked={liked} setLiked={setLiked} />
 					</Flex>
 
 					<Flex gap={2} alignItems={"center"}>
