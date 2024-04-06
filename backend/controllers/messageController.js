@@ -1,5 +1,6 @@
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
+import { getRecipientSocketId, io } from "../socket/socket.js";
 
 async function sendMessage(req, res) {
 	try {
@@ -37,6 +38,11 @@ async function sendMessage(req, res) {
 			}),
 		]);
 
+		const recipientSocketId = getRecipientSocketId(recipientId);
+		if (recipientSocketId) {
+			io.to(recipientSocketId).emit("newMessage", newMessage);
+		}
+
 		res.status(201).json(newMessage);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -48,9 +54,9 @@ async function getMessages(req, res) {
 	const userId = req.user._id;
 	try {
 		const conversation = await Conversation.findOne({
-			participants:  {$all: [userId, otherUserId] },
+			participants: { $all: [userId, otherUserId] },
 		});
-        //console.log(conversation)
+
 		if (!conversation) {
 			return res.status(404).json({ error: "Conversation not found" });
 		}
@@ -73,6 +79,12 @@ async function getConversations(req, res) {
 			select: "username profilePic",
 		});
 
+		// remove the current user from the participants array
+		conversations.forEach((conversation) => {
+			conversation.participants = conversation.participants.filter(
+				(participant) => participant._id.toString() !== userId.toString()
+			);
+		});
 		res.status(200).json(conversations);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
