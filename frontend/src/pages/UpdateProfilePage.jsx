@@ -15,9 +15,8 @@ import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
-import { useNavigate } from "react-router-dom";
+
 export default function UpdateProfilePage() {
-	const navigate = useNavigate();
 	const [user, setUser] = useRecoilState(userAtom);
 	const [inputs, setInputs] = useState({
 		name: user.name,
@@ -53,7 +52,6 @@ export default function UpdateProfilePage() {
 			showToast("Success", "Profile updated successfully", "success");
 			setUser(data);
 			localStorage.setItem("user-threads", JSON.stringify(data));
-			navigate("/");
 		} catch (error) {
 			showToast("Error", error, "error");
 		} finally {
