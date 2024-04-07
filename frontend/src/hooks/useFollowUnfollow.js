@@ -1,9 +1,11 @@
 import { useState } from "react";
 import useShowToast from "./useShowToast";
 import userAtom from "../atoms/userAtom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue,useRecoilState } from "recoil";
+import suggestedAtom from "../atoms/suggestedAtom";
 
 const useFollowUnfollow = (user) => {
+	const [suggestedUser, setSuggestedUser] = useRecoilState(suggestedAtom);
 	const currentUser = useRecoilValue(userAtom);
 	const [following, setFollowing] = useState(user.followers.includes(currentUser?._id));
 	const [updating, setUpdating] = useState(false);
@@ -38,7 +40,7 @@ const useFollowUnfollow = (user) => {
 				user.followers.push(currentUser?._id); // simulate adding to followers
 			}
 			setFollowing(!following);
-
+			setSuggestedUser(!suggestedUser);
 			console.log(data);
 		} catch (error) {
 			showToast("Error", error, "error");

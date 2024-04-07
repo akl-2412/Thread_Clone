@@ -2,7 +2,7 @@ import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
 import { getRecipientSocketId, io } from "../socket/socket.js";
 import { v2 as cloudinary } from "cloudinary";
-
+import mongoose from "mongoose";
 async function sendMessage(req, res) {
 	try {
 		const { recipientId, message } = req.body;
@@ -10,12 +10,12 @@ async function sendMessage(req, res) {
 		const senderId = req.user._id;
 
 		let conversation = await Conversation.findOne({
-			participants: { $all: [senderId, recipientId] },
+			participants: { $all: [senderId,recipientId] },
 		});
 
 		if (!conversation) {
 			conversation = new Conversation({
-				participants: [senderId, recipientId],
+				participants: [senderId,recipientId],
 				lastMessage: {
 					text: message,
 					sender: senderId,

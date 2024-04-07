@@ -1,11 +1,14 @@
 import userAtom from "../atoms/userAtom";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState ,useRecoilState} from "recoil";
 import useShowToast from "./useShowToast";
+import { useNavigate } from "react-router-dom";
+import { selectedConversationAtom } from "../atoms/messagesAtom";
 
 const useLogout = () => {
 	const setUser = useSetRecoilState(userAtom);
+	const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom);
 	const showToast = useShowToast();
-
+	const navigate = useNavigate();
 	const logout = async () => {
 		try {
 			const res = await fetch("/api/users/logout", {
@@ -23,6 +26,15 @@ const useLogout = () => {
 
 			localStorage.removeItem("user-threads");
 			setUser(null);
+			setSelectedConversation(
+				{
+					_id: "",
+					userId: "",
+					username: "",
+					userProfilePic: "",
+				}
+			);
+			navigate("/auth");
 		} catch (error) {
 			showToast("Error", error, "error");
 		}

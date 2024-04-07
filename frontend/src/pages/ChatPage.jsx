@@ -39,8 +39,32 @@ const ChatPage = () => {
 			});
 		});
 	}, [socket, setConversations]);
+	
 
 	useEffect(() => {
+		socket?.on("newMessage", (message)=> {
+			const getConversations = async () => {
+				try {
+					const res = await fetch("/api/messages/conversations");
+					const data = await res.json();
+					if (data.error) {
+						showToast("Error", data.error, "error");
+						return;
+					}
+					console.log(data);
+					setConversations(data);
+				} catch (error) {
+					showToast("Error", error.message, "error");
+				} finally {
+					setLoadingConversations(false);
+				}
+			};
+	
+			getConversations();
+        });
+	}, [showToast, setConversations,socket]);
+	useEffect(() => {
+		
 		const getConversations = async () => {
 			try {
 				const res = await fetch("/api/messages/conversations");
@@ -59,7 +83,8 @@ const ChatPage = () => {
 		};
 
 		getConversations();
-	}, [showToast, setConversations]);
+}, [showToast, setConversations,socket]);
+
 
 	const handleConversationSearch = async (e) => {
 		e.preventDefault();
@@ -98,7 +123,7 @@ const ChatPage = () => {
 					text: "",
 					sender: "",
 				},
-				_id: Date.now(),
+				_id:Date.now(),
 				participants: [
 					{
 						_id: searchedUser._id,
@@ -159,7 +184,7 @@ const ChatPage = () => {
 						))}
 
 					{!loadingConversations &&
-						conversations.map((conversation) => (
+						conversations?.map((conversation) => (
 							<Conversation
 								key={conversation._id}
 								isOnline={onlineUsers.includes(conversation.participants[0]._id)}
