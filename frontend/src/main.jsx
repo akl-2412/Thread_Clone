@@ -9,7 +9,7 @@ import { ColorModeScript } from "@chakra-ui/color-mode";
 import { BrowserRouter } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { SocketContextProvider } from "./context/SocketContext.jsx";
-
+import { Toaster } from "react-hot-toast";
 const styles = {
 	global: (props) => ({
 		body: {
@@ -40,6 +40,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 			<BrowserRouter>
 				<ChakraProvider theme={theme}>
 					<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+					<Toaster/>
 					<SocketContextProvider>
 						<App />
 					</SocketContextProvider>

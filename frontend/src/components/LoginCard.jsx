@@ -19,7 +19,7 @@ import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
 import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
-
+import { Link as RouterLink } from "react-router-dom";
 export default function LoginCard() {
 	const [showPassword, setShowPassword] = useState(false);
 	const setAuthScreen = useSetRecoilState(authScreenAtom);
@@ -113,6 +113,10 @@ export default function LoginCard() {
 							>
 								Login
 							</Button>
+							<Link as={RouterLink} to="/forgot-password">
+								Forgot Password?
+							</Link>
+
 						</Stack>
 						<Stack pt={6}>
 							<Text align={"center"}>

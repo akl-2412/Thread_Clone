@@ -1,10 +1,12 @@
 import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
 import bcrypt from "bcryptjs";
+import bcryptjs from 'bcryptjs';
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
-
+import {mailSender} from '../utils/helpers/mailSender.js';
+import crypto from 'crypto';
 const getUserProfile = async (req, res) => {
 	// We will fetch user profile either with username or userId
 	// query is either username or userId
@@ -222,6 +224,18 @@ const getSuggestedUsers = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 };
+const getFollowers = async (req,res)=>{
+	const userId=req.user._id;
+	const userfollowers = await  User.findOne({_id:userId}).select("followers");
+	if(!userfollowers){
+		return res.json({error : "No Followers Found"});
+	}
+	else{
+		const users=await User.find();
+		const followedUser=users.filter((user)=>userfollowers.followers.includes(user._id));
+		return res.json(followedUser);
+	}
+}
 
 const freezeAccount = async (req, res) => {
 	try {
@@ -239,6 +253,78 @@ const freezeAccount = async (req, res) => {
 	}
 };
 
+export const resetPasswordToken = async (req,res,next)=>{
+	try{
+	  const email = req.body.email;
+	  const user = await User.findOne({email:email});
+	  if(!user){
+		return res.status(400).json({ message: "User not found" });
+	  }
+	  const token = crypto.randomBytes(20).toString("hex");                          //generate token and we add expiration time in that token and then we add that token
+		  const updatedDetails = await User.findOneAndUpdate(          // URL so the URL which will be sent to user to reset password will expire after certain time;
+										  {email:email},
+										  {
+											  token:token,
+											  resetPasswordExpires: Date.now() + 5*60*1000,
+										  },
+										  {new:true});                  // {new:true} added because it return updated object so updatedDetails contain updated details;
+		  
+		  const url = `http://localhost:3000/update-password/${token}`                              //create url
+		  await mailSender(email, "Password Reset Link",`Your Link for email verification is ${url}. Please click this url to reset your password.`);   //send mail containing the url
+						   
+		  return res.json({                                                                         //return response
+			  success:true,
+			  message:'Email sent successfully, please check email and change pwd',
+		  });
+	  }
+	  catch(error) {
+		console.log(error);
+		//next(errorHandler(500,'something went wrong while sending rest password token'));
+		return res.status(500).json({
+		  success:false,
+		  message:'Something went wrong while sending reset pwd token'
+	  })
+	  }
+  }
+  export const resetPassword = async (req, res,next) => {
+	try {
+		const {password, confirmPassword, token} = req.body;                   //data fetch
+		if(password !== confirmPassword) {                                    //validation
+			return res.status(404).json({ success:false,  message:'Password not matching',}); 
+		}
+	   
+		const userDetails = await User.findOne({token: token});             //get userdetails from db using token
+		if(!userDetails) {                                                 //if no entry - invalid token
+			return res.json({ success:false,   message:'Token is invalid',  });
+		}
+  
+		if(!(userDetails.resetPasswordExpires > Date.now())){                 //token time check 
+				return res.json({success:false,  message:'Token is expired, please regenerate your token', });    
+		}
+		 
+		const encryptedPassword = await bcryptjs.hashSync(password, 10);           //hash password
+  
+		//password update IN DB;
+		await User.findOneAndUpdate({token:token}, {password:encryptedPassword}, {new:true}, );
+		
+		return res.status(200).json({                             //return response
+			success:true,
+			message:'Password reset successful',
+		});
+	}
+	catch(error) {
+		console.log(error);
+		return res.status(500).json({
+			success:false,
+			message:'Something went wrong while sending reset pwd mail'
+		})
+	}
+  };
+
+  
+
+
+
 export {
 	signupUser,
 	loginUser,
@@ -248,4 +334,5 @@ export {
 	getUserProfile,
 	getSuggestedUsers,
 	freezeAccount,
+	getFollowers,
 };

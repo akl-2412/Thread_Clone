@@ -80,8 +80,22 @@ const UserHeader = ({ user }) => {
 			)}
 			<Flex w={"full"} justifyContent={"space-between"}>
 				<Flex gap={2} alignItems={"center"}>
-					<Text color={"gray.light"}>{user.followers.length} followers</Text>
-					<Box w='1' h='1' bg={"gray.light"} borderRadius={"full"}></Box>
+					{ 
+					   (currentUser._id==user._id) ? (
+						<>
+						<Link as={RouterLink} to={"/followers"}>
+						<Text color={"gray.light"}>{user.followers.length} followers</Text>
+						</Link>
+						<Box w='1' h='1' bg={"gray.light"} borderRadius={"full"} />
+						</>
+
+					   ):(
+						<>
+						<Text color={"gray.light"}>{user.followers.length} followers</Text>
+						<Box w='1' h='1' bg={"gray.light"} borderRadius={"full"}  />
+						</>
+					   )
+					}
 					<Link color={"gray.light"}>instagram.com</Link>
 				</Flex>
 				<Flex>
@@ -117,7 +131,7 @@ const UserHeader = ({ user }) => {
 					pb='3'
 					cursor={"pointer"}
 				>
-					<Text fontWeight={"bold"}> Replies</Text>
+					<Text fontWeight={"bold"}>Replies</Text>
 				</Flex>
 			</Flex>
 		</VStack>
