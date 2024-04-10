@@ -2,27 +2,21 @@ import { Alert } from "flowbite-react";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
-//import { useDispatch, useSelector } from "react-redux";
-//import { setLoading } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
-import { Spinner } from "flowbite-react";
-//import userAtom from "../atoms/userAtom";
+//import { Spinner } from "flowbite-react";
+import { BounceLoader } from "react-spinners";
 function ForgotPassword() {
     const [formData, setFormData] = useState({});
     const [emailSent, setEmailSent] = useState(false);
     const [errorMessagepass, setErrorMessagePass] = useState(null);
-   // const [user, setUser] = useRecoilState(userAtom);
-    const [loading,setLoading]=useState(false);
-    //const dispatch = useDispatch();
-    //const { loading } = useSelector((state) => state.user);
-
+    const [loading, setLoading] = useState(false);
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
         if (!formData.email) {
             return;
         }
-        console.log(formData)
+
         try {
             setLoading(true);
             setErrorMessagePass(null);
@@ -32,9 +26,13 @@ function ForgotPassword() {
                 body: JSON.stringify(formData),
             });
             const data = await res.json();
+           
             if (data.success === false) {
+               // console.log(data);
+                toast.error(data.message);
                 setLoading(false);
                 setErrorMessagePass(data.message);
+               
             }
             if (res.ok) {
                 toast.success("Reset Email Sent");
@@ -48,20 +46,20 @@ function ForgotPassword() {
     };
 
     return (
-        <div className="mx-auto">
+        <div className="container mx-auto flex justify-center items-center min-h-screen">
             {loading ? (
-                <div className="grid min-h-[calc(100vh-3.5rem)] place-items-center spinner">
-                    <Spinner />
+                <div className="flex justify-center items-center h-screen ">
+                    <BounceLoader color="darkblue" />
                 </div>
             ) : (
-                <div className="mx-auto items-center justify-center w-full sm:w-1/2 mt-[150px] mb-[50px]">
-                    <h1 className="text-center">{!emailSent ? "Reset your Password" : "Check Mail"}</h1>
-                    <p className="text-center">
+                <div className="w-full sm:w-1/2 mt-10 mb-20">
+                    <h1 className="text-center text-3xl font-semibold">{!emailSent ? "Reset your Password" : "Check Mail"}</h1>
+                    <p className="text-center mt-2">
                         {!emailSent ? "We'll email you instructions to reset your password. If you don't have access to your email we can try account recovery" : `We have sent the reset email to ${formData.email}`}
                     </p>
                     <form onSubmit={handleOnSubmit} className="mt-5">
                         {!emailSent && (
-                            <label className="block text-center">
+                            <label className="block text-center justify-center items-center">
                                 <p>Email address</p>
                                 <input
                                     required
@@ -69,22 +67,20 @@ function ForgotPassword() {
                                     name="email"
                                     onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value.trim() })}
                                     placeholder="Enter email address"
-                                    className="form-style w-full rounded-md text-black"
+                                    className="form-style w-full rounded-md py-2 px-4 mt-2"
                                 />
                             </label>
                         )}
-                        <button className="mt-6 ml-[320px] w-full sm:w-auto rounded-[8px] bg-fuchsia-700 py-[12px] px-[12px] font-medium text-richblack-900">
-                            {!emailSent ? "Submit" : "Resend Email"}
-                        </button>
+                         <div className="flex justify-center">
+                            <button className="mt-6 w-full sm:w-auto bg-purple-600 text-white rounded-md py-2 px-4">
+                                {!emailSent ? "Submit" : "Resend Email"}
+                            </button>
+                         </div>
+                       
                     </form>
-                    {errorMessagepass && (
-                        <Alert className="mt-5" color="failure">
-                            {errorMessagepass}
-                        </Alert>
-                    )}
                     <div className="mt-6 text-center">
-                        <Link to="/auth" className="flex items-center justify-center gap-x-2 text-richblack-5">
-                            <BiArrowBack /> Back To Login
+                        <Link to="/auth" className="flex items-center justify-center text-blue-500">
+                            <BiArrowBack className="mr-2" /> Back To Login
                         </Link>
                     </div>
                 </div>

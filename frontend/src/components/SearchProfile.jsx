@@ -42,7 +42,7 @@ const SearchProfile = ({ user}) => {
 					}}
 					src={user.profilePic}
 				>
-					<AvatarBadge boxSize='1em' bg='green.500' />
+					
 				</Avatar>
 			</WrapItem>
             <Stack direction={"column"} fontSize={"sm"}>

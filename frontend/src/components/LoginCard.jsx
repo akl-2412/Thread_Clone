@@ -99,24 +99,25 @@ export default function LoginCard() {
 								</InputRightElement>
 							</InputGroup>
 						</FormControl>
-						<Stack spacing={10} pt={2}>
-							<Button
-								loadingText='Logging in'
-								size='lg'
-								bg={useColorModeValue("gray.600", "gray.700")}
-								color={"white"}
-								_hover={{
-									bg: useColorModeValue("gray.700", "gray.800"),
-								}}
-								onClick={handleLogin}
-								isLoading={loading}
-							>
-								Login
-							</Button>
-							<Link as={RouterLink} to="/forgot-password">
-								Forgot Password?
-							</Link>
-
+						<Stack spacing={2}>
+							<Flex justify="space-between" align="center">
+								<Link as={RouterLink} to="/forgot-password">
+									Forgot Password?
+								</Link>
+								<Button
+									loadingText='Logging in'
+									size='lg'
+									bg={useColorModeValue("gray.600", "gray.700")}
+									color={"white"}
+									_hover={{
+										bg: useColorModeValue("gray.700", "gray.800"),
+									}}
+									onClick={handleLogin}
+									isLoading={loading}
+								>
+									Login
+								</Button>
+							</Flex>
 						</Stack>
 						<Stack pt={6}>
 							<Text align={"center"}>

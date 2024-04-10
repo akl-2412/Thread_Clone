@@ -30,12 +30,12 @@ const Followers = () => {
 	}, [showToast]);
 
 	return (
-		<>
+		<div className="ml-10 mr-10">
 			<Text mb={4} fontWeight={"bold"}>
 				Followed Users
 			</Text>
 			<Flex direction={"column"} gap={4}>
-				{!loading && currentfollowedUsers.map((user) => <SuggestedUser key={user._id} user={user} />)}
+				{!loading && followedUsers.map((user) => <SuggestedUser key={user._id} user={user} />)}
 				{loading &&
 					[0, 1, 2, 3, 4].map((_, idx) => (
 						<Flex key={idx} gap={2} alignItems={"center"} p={"1"} borderRadius={"md"}>
@@ -55,7 +55,7 @@ const Followers = () => {
 						</Flex>
 					))}
 			</Flex>
-		</>
+		</div>
 	);
 };
 

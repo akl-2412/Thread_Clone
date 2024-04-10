@@ -258,7 +258,9 @@ export const resetPasswordToken = async (req,res,next)=>{
 	  const email = req.body.email;
 	  const user = await User.findOne({email:email});
 	  if(!user){
-		return res.status(400).json({ message: "User not found" });
+		return res.status(404).json({
+			success:false,
+			 message: "User not found" });
 	  }
 	  const token = crypto.randomBytes(20).toString("hex");                          //generate token and we add expiration time in that token and then we add that token
 		  const updatedDetails = await User.findOneAndUpdate(          // URL so the URL which will be sent to user to reset password will expire after certain time;
